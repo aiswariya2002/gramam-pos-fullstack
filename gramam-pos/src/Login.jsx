@@ -62,7 +62,7 @@ export default function Login() {
     // -------------------------
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000); // ⏰ increased timeout
+      const timeout = setTimeout(() => controller.abort(), 30000); // ⏰ increased timeout
 
       const baseUrl = window.location.origin;
 
