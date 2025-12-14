@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- ✅ PWA Essentials -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2b7a0b" />
+
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="icon" href="./assets/icon-192x192.png" />
+
+    <title>Gramam POS</title>
+    <script type="module" crossorigin src="./assets/index-Cqy2N5Yh.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/react-BSeQcPOp.js">
+    <link rel="modulepreload" crossorigin href="./assets/mui-6oS2ArYI.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-Cfa9BwQ7.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-CZUCpD0k.css">
+  <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- ✅ React Entry -->
+
+    <!-- ✅ Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", async () => {
+          try {
+            const reg = await navigator.serviceWorker.register("/sw.js", {
+              scope: "/",
+            });
+            console.log("✅ SW registered:", reg.scope);
+
+            // Auto-update check every 30 min (optional)
+            setInterval(() => reg.update(), 30 * 60 * 1000);
+
+            // Auto-refresh when new content is available
+            reg.onupdatefound = () => {
+              const newWorker = reg.installing;
+              if (newWorker) {
+                newWorker.onstatechange = () => {
+                  if (
+                    newWorker.state === "installed" &&
+                    navigator.serviceWorker.controller
+                  ) {
+                    console.log("🔄 New version found, reloading...");
+                    window.location.reload();
+                  }
+                };
+              }
+            };
+          } catch (err) {
+            console.warn("⚠️ SW registration failed:", err);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

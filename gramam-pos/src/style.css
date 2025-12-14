@@ -1,0 +1,19 @@
+/* === Browser Compatibility Fixes (REMOVE WARNINGS) === */
+
+/* Fix for text-size-adjust */
+html {
+  text-size-adjust: 100% !important;
+  -webkit-text-size-adjust: 100% !important;
+}
+
+/* Fix for Safari user-select warning */
+* {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* Fix forced-color-adjust warning for Safari */
+:root {
+  forced-color-adjust: none !important;
+  -webkit-forced-color-adjust: none !important;
+}
