@@ -63,6 +63,8 @@ app.use(
         "http://localhost:5173",
         "http://localhost:4173",
         "http://localhost:3000",
+        "https://gramam-pos.vercel.app",
+      "https://gramam-pos-fullstack-1.onrender.com",
       ];
       if (!origin || allowed.some((url) => origin.startsWith(url))) {
         callback(null, true);
