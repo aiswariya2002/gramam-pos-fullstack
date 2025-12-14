@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState("");
 
   // ===========================================
-  // AUTO-REDIRECT IF ALREADY LOGGED IN (ONLINE OR OFFLINE)
+  // AUTO-REDIRECT IF ALREADY LOGGED IN
   // ===========================================
   useEffect(() => {
     const saved = localStorage.getItem("user");
@@ -23,9 +23,9 @@ export default function Login() {
   }, []);
 
   // ===========================================
-  // SUBMIT LOGIN HANDLER
+  // LOGIN HANDLER
   // ===========================================
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, retry = false) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
@@ -62,10 +62,18 @@ export default function Login() {
     // -------------------------
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+      const timeout = setTimeout(() => controller.abort(), 15000); // ⏰ increased timeout
 
-      // ✅ Dynamic base URL: works for both local + mobile + hosted
-      const baseUrl = window.location.origin; // e.g. http://10.237.54.70:5000
+      const baseUrl = window.location.origin;
+
+      // 🟢 PRE-PING Render backend (to wake it up)
+      try {
+        await fetch(`${baseUrl}/`, { cache: "no-store" });
+      } catch {
+        console.log("Backend wake ping failed — continuing anyway");
+      }
+
+      // Actual login request
       const res = await fetch(`${baseUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,22 +88,25 @@ export default function Login() {
 
       const role = data.user.role?.toLowerCase() || "worker";
 
-      // ✅ store locally for future offline login
+      // ✅ Save to localStorage for offline login
       localStorage.setItem(
         "user",
         JSON.stringify({
           fullname: data.user.fullname,
           username: data.user.username,
           role,
-          password, // stored plain for offline match
+          password, // plain for offline login
         })
       );
 
-      // redirect based on role
       window.location.href = role === "admin" ? "/dashboard" : "/sales";
     } catch (err) {
       console.error("Login error:", err);
-      if (err.name === "AbortError") {
+      if (err.name === "AbortError" && !retry) {
+        setError("Server waking up... retrying");
+        await new Promise((r) => setTimeout(r, 3000));
+        return handleSubmit(e, true); // 🔁 retry once
+      } else if (err.name === "AbortError") {
         setError("Server timeout — please try again.");
       } else if (err.message?.includes("Failed to fetch")) {
         setError("Server unreachable. Check Wi-Fi or backend connection.");
