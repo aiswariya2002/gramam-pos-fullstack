@@ -19,7 +19,7 @@ else if (hostname.startsWith("10.") || hostname.startsWith("192.168.")) {
 
 // Production (Render backend)
 else {
-  API_BASE = "https://gramam-pos-api.onrender.com";
+  API_BASE = "https://gramam-pos-fullstack-1.onrender.com";
 }
 
 export async function safeFetch(path, options = {}) {
